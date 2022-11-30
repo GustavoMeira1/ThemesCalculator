@@ -28,6 +28,7 @@ export default {
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&display=swap');
+
 * {
   padding: 0;
   margin: 0;

@@ -4,7 +4,7 @@
       <p class="nTheme chColor">1 2 3</p>
       <div class="title" style="margin-bottom:30px">
         <span class="calc chColor">calc</span>
-        <span class="theme chColor">THEME</span>
+        <span class="theme chColor">THEME</span> 
 
         <div class="radio">
           <input class="button" type="radio" name="toggle" id="one" />
@@ -14,29 +14,31 @@
 
       </div>
       <div class="row result">
-        <p class="chColor">{{num}}</p>
+        <p class="chColor" v-if="result==0">{{num}}</p>
+        <p class="chColor" v-if="result!==0">{{result}}</p>
       </div>
       <div class="row operations">
-          <div class="btns">7</div>
-          <div class="btns">8</div>
-          <div class="btns">9</div>
-          <div class="bluBtn">DEL</div>
-          <div class="btns">4</div>
-          <div class="btns">5</div>
-          <div class="btns">6</div>
-          <div class="btns">+</div>
-          <div class="btns">1</div>
-          <div class="btns">2</div>
-          <div class="btns">3</div>
-          <div class="btns">-</div>
-          <div class="btns">.</div>
-          <div class="btns">0</div>
-          <div class="btns">/</div>
-          <div class="btns">x</div>
-          <div class="bluBtn difBtn">RESET</div>
-          <div class="redBtn difBtn">=</div>
+          <div class="btns" @click="calc(7)" >7</div>
+          <div class="btns" @click="calc(8)" >8</div>
+          <div class="btns" @click="calc(9)" >9</div>
+          <div class="bluBtn" @click="del()">DEL</div>
+          <div class="btns" @click="calc(4)" >4</div>
+          <div class="btns" @click="calc(5)" >5</div>
+          <div class="btns" @click="calc(6)" >6</div>
+          <div class="btns" @click="signal(0)">+</div>
+          <div class="btns" @click="calc(1)" >1</div>
+          <div class="btns" @click="calc(2)" >2</div>
+          <div class="btns" @click="calc(3)" >3</div>
+          <div class="btns" @click="signal(1)">-</div>
+          <div class="btns" @click="doter()">.</div>
+          <div class="btns" @click="calc(0)" >0</div>
+          <div class="btns" @click="signal(2)">/</div>
+          <div class="btns" @click="signal(3)">X</div>
+          <div class="bluBtn difBtn" @click="reset()">RESET</div>
+          <div class="redBtn difBtn" @click="res()">=</div>
       </div>
     </div>
+
   </v-container>
 </template>
 
@@ -46,7 +48,14 @@
 
     data(){
       return{
-        num:0.01,
+        num:0,
+        lastn:[],
+        ind:0,
+        firstNum:0,
+        operation:'',
+        result:0,
+        dot:0,
+        vall:10,
       }
     },
     mounted(){
@@ -55,7 +64,6 @@
       const letters = document.getElementsByClassName('chColor')
       const btns = document.getElementsByClassName('btns')
       const blueBtns = document.getElementsByClassName('bluBtn')
-      const inputs = document.getElementsByClassName('button')
 
 
       arr.forEach((element, index) => {
@@ -138,12 +146,104 @@
 
     },
     methods:{
-      
+      calc(value){
+
+          this.result = 0
+          this.lastn[this.ind]=value
+          this.ind = this.ind + 1
+          if(this.dot == 0){
+            
+            if(this.num == 0){
+              this.num = value
+            } else{
+              this.num = this.num * 10 + value
+            }
+          } else{
+          this.num = this.num + value/this.vall
+          this.vall = this.vall * 10
+        }
+      },
+      del(){
+        this.ind = this.ind - 1
+        this.num = this.num - this.lastn[this.ind]
+        this.num = this.num / 10
+        if(this.result > 0){
+          this.num = 0
+          this.result = 0
+        }
+      },
+      signal(signal){
+        if(this.result == 0){
+        this.firstNum = this.num
+        this.num = 0
+        if(signal == 0){
+          this.operation = 0
+        } else if( signal == 1){
+          this.operation = 1
+        }else if( signal == 2){
+          this.operation = 2
+        }else if( signal == 3){
+          this.operation = 3
+        }
+        this.dot=0
+        this.vall=10
+      } else{
+        this.firstNum = this.result
+        this.num = 0
+        this.result = 0
+        if(signal == 0){
+          this.operation = 0
+        } else if( signal == 1){
+          this.operation = 1
+        }else if( signal == 2){
+          this.operation = 2
+        }else if( signal == 3){
+          this.operation = 3
+        }
+        this.dot=0
+        this.vall=10
+
+      }
+      },
+      res(){
+        if(this.operation == 0){
+          this.result = this.firstNum + this.num
+        } else if( this.operation == 1){
+          this.result = this.firstNum - this.num
+        }else if( this.operation == 2){
+          this.result = this.firstNum / this.num
+        }else if( this.operation == 3){
+          this.result = this.firstNum * this.num
+        }
+        this.num = 0
+        this.dot = 0
+        this.vall=10
+      },
+      reset(){
+        this.num = 0
+        this.result = 0
+        this.dot = 0
+        this.vall=10
+      },
+      doter(){
+        this.dot = 1
+      }
     }
   }
 </script>
 
 <style>
+.ALAN{
+  text-transform: uppercase;
+  color: white;
+  text-align: center;
+  font-size: 25px;
+}
+.alanRes{
+  text-align: right;
+  font-size: 25px;
+  transform: translateX(-80px) translateY(-10px) ;
+}
 .nTheme{
   color: white;
   text-align: right;
@@ -227,6 +327,27 @@ input:hover {
   font-size: 25px;
   color: hsl(221, 14%, 31%);
   padding-top: 5px;
+}
+.btns:hover{
+  cursor: pointer;
+}
+.btns:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+.bluBtn:hover{
+  cursor: pointer;
+}
+.bluBtn:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+}
+.redBtn:hover{
+  cursor: pointer;
+}
+.redBtn:active {
+    transform: scale(0.98);
+    box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
 }
 .difBtn{
   padding-top: 5px;
